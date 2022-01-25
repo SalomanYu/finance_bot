@@ -8,6 +8,13 @@ from openpyxl import load_workbook
 import xlrd
 import time
 
+from sys import platform
+
+if platform == 'win32':
+    import ctypes
+    kernel32 = ctypes.windll.kernel32
+    kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
+
 
 
 success_message = '\033[2;30;42m [SUCCESS] \033[0;0m' 
