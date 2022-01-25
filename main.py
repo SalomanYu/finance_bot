@@ -30,16 +30,20 @@ class FinBot:
         \t3. Вход в акцию\n
     """
     def __init__(self):
-        method_load_data = input('Приветствуем! Давайте определимся откуда мы будем брать данные для расчёта:\n\n 1. Выберем какое-то конкретное юридическое лицо из списка\n 2. Загрузим собственный excel-файл с расчётами\n 0. Выход\n\n>>> ')
+
+        self.work_with_legal_entity()
+
+        # НА ЗАМОРОЗКЕ 
+        # method_load_data = input('Приветствуем! Давайте определимся откуда мы будем брать данные для расчёта:\n\n 1. Выберем какое-то конкретное юридическое лицо из списка\n 2. Загрузим собственный excel-файл с расчётами\n 0. Выход\n\n>>> ')
         
-        if method_load_data == '1':
-            self.work_with_legal_entity()
-        elif method_load_data == '2':
-            self.work_with_load_excel()
-        elif method_load_data == '0':
-            quit()
-        else:
-            print(error_message + '\tЯ Вас не понимаю. Введите мне в качестве ответа цифру 1 или 2')
+        # if method_load_data == '1':
+        #     self.work_with_legal_entity()
+        # elif method_load_data == '2':
+        #     self.work_with_load_excel()
+        # elif method_load_data == '0':
+        #     quit()
+        # else:
+        #     print(error_message + '\tЯ Вас не понимаю. Введите мне в качестве ответа цифру 1 или 2')
 
 
 
