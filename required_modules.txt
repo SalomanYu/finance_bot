@@ -1,2 +1,5 @@
-pip install gspread, oauth2client, pandas, openpyxl
+pip install gspread
+pip install oauth2client
+pip install pandas
+pip install openpyxl
 pip install xlrd==1.2.0
