@@ -159,6 +159,8 @@ class FinBot:
                 print(error_message + '\tПревышен лимит запросов. Бот автоматически продолжит через 15 секунд ожидания.')
                 time.sleep(20)
                 add_changes_to_sheet(item)
+            except AttributeError:
+                print('Товар не найден ', order)
 
         workBook_xrld = xlrd.open_workbook(discount_report_file)
         workSheet_xrld = workBook_xrld.sheet_by_index(0)
