@@ -207,10 +207,12 @@ class FinBot:
                                 order_price = workSheet_google.cell(order_row_in_googlesheet, col_order_price).value # Обращаемся к ячейке со строкой=строка товара и столбцом=столбец цены
                                 
                                 order_price = order_price.split(',')[0]
-
-                                worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = float(order_price) # Записываем в файл, но еще не сохраняем изменения
-                                worksheet_writer.cell(item_row, excel_agreed_share_col).value = float(order_share) # Записываем в файл, но еще не сохраняем изменения
-                                
+                                try:
+                                    worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = float(order_price) # Записываем в файл, но еще не сохраняем изменения
+                                    worksheet_writer.cell(item_row, excel_agreed_share_col).value = float(order_share) # Записываем в файл, но еще не сохраняем изменения
+                                except ValueError:
+                                    worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = order_price
+                                    worksheet_writer.cell(item_row, excel_agreed_share_col).value = order_share
                                 print(success_message, f'\t Записан {excel_order_ids[item]}')
                         break # Прекращаем поиск после нахождения колонки Номенклатура
 
