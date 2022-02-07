@@ -160,7 +160,7 @@ class FinBot:
                 time.sleep(20)
                 add_changes_to_sheet(item)
             except AttributeError:
-                print('Товар не найден ', order)
+                print('Товар не найден ', item)
 
         workBook_xrld = xlrd.open_workbook(discount_report_file)
         workSheet_xrld = workBook_xrld.sheet_by_index(0)
