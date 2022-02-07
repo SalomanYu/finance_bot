@@ -208,8 +208,8 @@ class FinBot:
                                 
                                 order_price = order_price.split(',')[0]
                                 try:
-                                    worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = float(order_price) # Записываем в файл, но еще не сохраняем изменения
-                                    worksheet_writer.cell(item_row, excel_agreed_share_col).value = float(order_share) # Записываем в файл, но еще не сохраняем изменения
+                                    worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = int(order_price) # Записываем в файл, но еще не сохраняем изменения
+                                    worksheet_writer.cell(item_row, excel_agreed_share_col).value = int(order_share) # Записываем в файл, но еще не сохраняем изменения
                                 except ValueError:
                                     worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = order_price
                                     worksheet_writer.cell(item_row, excel_agreed_share_col).value = order_share
