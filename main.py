@@ -6,7 +6,7 @@ import pandas as pd
 import openpyxl  
 from openpyxl import load_workbook
 import xlrd
-import time
+import time, re
 
 from sys import platform
 
@@ -187,48 +187,6 @@ class FinBot:
 
     def set_standart_price(self, discount_report_file, google_sheet): # Раздел бота со стандартными ценами
         print(warning_message + '\tЗапустили запись стандартных цен в файл')
-        def edit_price_and_share_in_excel_file(item):
-            """
-            Функция записи изменений в иксель из гугл таблиц
-            """
-            
-            for item_with_row_num in range(workSheet_xlrd.nrows):
-
-                try:
-                    row_title = workSheet_xlrd.col_values(item_with_row_num)[0] # Выбираем из списка конткретной колонки только первый элемент, он и будет у нас заглавием
-                    if row_title == 'Номенклатура (код 1С)':
-                        ids = [int(i) for i in workSheet_xlrd.col_values(item_with_row_num)[1:]] # Повторное присвоение списка артикулов
-                        for num_row in range(len(excel_order_ids)):
-                            if str(excel_order_ids[num_row]) == str(excel_order_ids[item]): # Проверка для выявления номера строки артикула
-                                item_row = num_row + 2 
-
-                                order_row_in_googlesheet = workSheet_google.find(str(excel_order_ids[item])).row # Ищем артикул из иксель в гугл таблице, если его нет, сработает AttributeError
-                                order_share = workSheet_google.cell(order_row_in_googlesheet, col_share_s_plus_a).value # Обращаемся к ячейке со строкой=строка товара и столбцом=столбец скидки
-                                order_price = workSheet_google.cell(order_row_in_googlesheet, col_order_price).value # Обращаемся к ячейке со строкой=строка товара и столбцом=столбец цены
-                                
-                                order_price = order_price.split(',')[0]
-                                try:
-                                    worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = int(order_price) # Записываем в файл, но еще не сохраняем изменения
-                                    worksheet_writer.cell(item_row, excel_agreed_share_col).value = int(order_share) # Записываем в файл, но еще не сохраняем изменения
-                                except ValueError:
-                                    worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = order_price
-                                    worksheet_writer.cell(item_row, excel_agreed_share_col).value = order_share
-                                print(success_message, f'\t Записан {excel_order_ids[item]}')
-                        break # Прекращаем поиск после нахождения колонки Номенклатура
-
-                except gspread.exceptions.APIError:
-                    print(error_message + '\tПревышен лимит запросов. Бот автоматически продолжит через 15 секунд ожидания.')
-                    time.sleep(15)
-                    edit_price_and_share_in_excel_file(item)
-
-                except IndexError: # В конце итерации без использования этого исключения, вылетает ошибка IndexError
-                    pass
-
-                except AttributeError: 
-                    print(warning_message, f'\tЭлемента нет в таблице расчётов {excel_order_ids[item]}')
-        
-
-        # Основной блок функции set_standart_price
 
         excel_filename = discount_report_file # Отчет по скидкам
         
@@ -263,6 +221,51 @@ class FinBot:
             
             except IndexError: # В конце итерации без использования этого исключения, вылетает ошибка IndexError
                 break
+        
+        # Основной блок функции set_standart_price
+
+        def edit_price_and_share_in_excel_file(item):
+            """
+            Функция записи изменений в иксель из гугл таблиц
+            """
+            
+            for item_with_row_num in range(workSheet_xlrd.nrows):
+
+                try:
+                    row_title = workSheet_xlrd.col_values(item_with_row_num)[0] # Выбираем из списка конткретной колонки только первый элемент, он и будет у нас заглавием
+                    if row_title == 'Номенклатура (код 1С)':
+                        ids = [int(i) for i in workSheet_xlrd.col_values(item_with_row_num)[1:]] # Повторное присвоение списка артикулов
+                        for num_row in range(len(excel_order_ids)):
+                            if str(excel_order_ids[num_row]) == str(excel_order_ids[item]): # Проверка для выявления номера строки артикула
+                                item_row = num_row + 2 
+
+                                order_row_in_googlesheet = workSheet_google.find(str(excel_order_ids[item])).row # Ищем артикул из иксель в гугл таблице, если его нет, сработает AttributeError
+                                order_share = workSheet_google.cell(order_row_in_googlesheet, col_share_s_plus_a).value # Обращаемся к ячейке со строкой=строка товара и столбцом=столбец скидки
+                                order_price = workSheet_google.cell(order_row_in_googlesheet, col_order_price).value # Обращаемся к ячейке со строкой=строка товара и столбцом=столбец цены
+                                
+                                # order_price = order_price.split(',')[0].replace(' ', '')
+                                # order_price = re.sub(r' ', r'', order_price.split(',')[0])
+                                # print(len(order_price))
+                                try:
+                                    worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = int(order_price) # Записываем в файл, но еще не сохраняем изменения
+                                    worksheet_writer.cell(item_row, excel_agreed_share_col).value = int(order_share) # Записываем в файл, но еще не сохраняем изменения
+                                except ValueError:
+                                    worksheet_writer.cell(item_row, excel_new_price_before_share_col).value = int(order_price.split(',')[0].replace(u'\xa0', u''))
+                                    worksheet_writer.cell(item_row, excel_agreed_share_col).value = int(order_share)
+                                print(success_message, f'\t Записан {excel_order_ids[item]}')
+                        break # Прекращаем поиск после нахождения колонки Номенклатура
+
+                except gspread.exceptions.APIError:
+                    print(error_message + '\tПревышен лимит запросов. Бот автоматически продолжит через 15 секунд ожидания.')
+                    time.sleep(15)
+                    edit_price_and_share_in_excel_file(item)
+
+                except IndexError: # В конце итерации без использования этого исключения, вылетает ошибка IndexError
+                    pass
+
+                except AttributeError: 
+                    print(warning_message, f'\tЭлемента нет в таблице расчётов {excel_order_ids[item]}')
+        
 
         # Поиск нужной ячейки по номеру колонки и строки и последующая за этим запись в ячейку
         for item in range(len(excel_order_ids)): # Пробегаемся по списку артикулов в таблице отчета по скидке 
