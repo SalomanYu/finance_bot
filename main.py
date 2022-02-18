@@ -204,23 +204,28 @@ class FinBot:
         # Плюсом модуля является то, что здесь можно указать ячейку для записи по номеру столбца и строки
         workbook_writer = openpyxl.load_workbook(excel_filename)
         worksheet_writer = workbook_writer.worksheets[0]
+        table_titles = workSheet_xlrd.row_values(0)
+        # print(workSheet_xlrd.row_values(0))
 
         # Поиск номеров колонок для записи
-        for item in range(workSheet_xlrd.nrows):
+        for item in range(len(table_titles)):
             try:
-                row_title = workSheet_xlrd.col_values(item)[0] # Выбираем из списка конткретной колонки только первый элемент, он и будет у нас заглавием
-                if row_title == 'Номенклатура (код 1С)':
+                # row_title = workSheet_xlrd.col_values(item)[0] # Выбираем из списка конткретной колонки только первый элемент, он и будет у нас заглавием
+                if table_titles[item] == 'Номенклатура (код 1С)':
                     excel_order_values = workSheet_xlrd.col_values(item)[1:] # Исключаем из списка колонки ячейку Номенклатура
                     excel_order_ids = [int(elem) for elem in excel_order_values] # Преобразовываем float --> int 
 
-                elif row_title == 'Новая розн. цена (до скидки)': # Условие нахождения колонки для записи в нее значений
+                elif table_titles[item] == 'Новая розн. цена (до скидки)':
+                    # print(item+1) # Условие нахождения колонки для записи в нее значений
                     excel_new_price_before_share_col = item + 1 # Если не прибавлять 1, то запись будет не попадать по нужной колонке. Будет записывать на колонку с номером item-1
                 
-                elif row_title == 'Согласованная скидка, %':
+                elif table_titles[item] == 'Согласованная скидка, %':
+                    # print(item+1 , 'agreed')
                     excel_agreed_share_col = item  + 1 # Если не прибавлять 1, то запись будет не попадать по нужной колонке. Будет записывать на колонку с номером item-1
             
             except IndexError: # В конце итерации без использования этого исключения, вылетает ошибка IndexError
                 break
+        
         
         # Основной блок функции set_standart_price
 
@@ -272,7 +277,7 @@ class FinBot:
             edit_price_and_share_in_excel_file(item)
             
         workbook_writer.save(excel_filename) # Сохраняем изменения
-        print(success_message + '\tФайл изменен и сохранен ', excel_filename)
+        print(success_message + '\tФайл изменен и сохранен ', excel_filename)        
         
 
     def work_with_load_excel(self):
