@@ -154,6 +154,7 @@ class FinBot:
                 order = workSheet_google.find(str(excel_ids[item])).row
                 workSheet_google.update_cell(order, col_planned_price, str(excel_planned_price[item]))
                 workSheet_google.update_cell(order, col_share_percentage, str(excel_percent_order[item]))
+                workSheet_google.update_cell(order, col_start_price, str(excel_start_price[item]))
                 print(success_message + '\tЗаписан ', item+1)
             except gspread.exceptions.APIError:
                 print(error_message + '\tПревышен лимит запросов. Бот автоматически продолжит через 15 секунд ожидания.')
@@ -173,11 +174,14 @@ class FinBot:
                 excel_planned_price = [int(elem) for elem in workSheet_xrld.col_values(item)[1:]]
             elif row_title == 'Загружаемая скидка для участия в акции':
                 excel_percent_order = [int(elem) for elem in workSheet_xrld.col_values(item)[1:]]
+            elif row_title == 'Загружаемая цена для участия в акции':
+                excel_start_price = [int(elem) for elem in workSheet_xrld.col_values(item)[1:]]
         
         workSheet_google = google_sheet
         
         col_planned_price = workSheet_google.find('Плановая цена').col
         col_share_percentage = workSheet_google.find('Требуемый %').col
+        col_start_price = workSheet_google.find('Начальная цена').col
 
         for item in range(len(excel_ids)):
             add_changes_to_sheet(item)
